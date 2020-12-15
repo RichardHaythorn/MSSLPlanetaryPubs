@@ -1,16 +1,30 @@
-# This is a sample Python script.
+import requests
+import json
+from datetime import date
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+currentyear = date.today().year
+
+lib_token = '6PTOklOwoNVpIZlkzfX2imWZS1wuJyZ4uCZxijQR'  # Needs Updating for new people
+
+numberofrequestrows = 500
+r = requests.get("https://api.adsabs.harvard.edu/v1/biblib/libraries/MLEF82wzRk60fgarKZPCow",
+                 headers={"Authorization": "Bearer " + lib_token},
+                 params={"rows": numberofrequestrows, "fl": "title,year"})
+
+# payload = {"fl":"year",
+#            "sort": "first_author asc",
+#            "format": "%i, %T, %Q, doi:%d, %D"}
+paperlist = r.json()['solr']['response']['docs']
+
+for paper in paperlist:
+    if int(paper['year']) < (currentyear - 5):
+        continue
+    else:
+        print(paper['title'][0], paper['year'])
+
+# f = open("MSSLPlanetaryPubs.txt", "a")
+# f.write("\n")
+# f.close()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# %i, %T, %Q, doi:%d, %D
